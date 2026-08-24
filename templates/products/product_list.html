@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Products — ShopEase{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>Products</h1>
+        <p>
+            Browse our collection
+            {% if current_category %} — {{ current_category|title }}{% endif %}
+            {% if current_query %} — Search: "{{ current_query }}"{% endif %}
+        </p>
+    </div>
+</div>
+
+<div class="container" style="padding-top: 30px; padding-bottom: 40px;">
+    <!-- Filters -->
+    <form method="GET" action="{% url 'products:product_list' %}" class="filters-bar">
+        <div class="filter-group">
+            <label for="searchInput">Search:</label>
+            <input type="text" name="q" id="searchInput" value="{{ current_query }}" placeholder="Search products..."
+                class="filter-input">
+        </div>
+        <div class="filter-group">
+            <label for="categoryFilter">Category:</label>
+            <select name="category" id="categoryFilter" class="filter-select">
+                <option value="">All Categories</option>
+                {% for value, label in categories %}
+                {% if current_category == value %}
+                <option value="{{ value }}" selected>{{ label }}</option>
+                {% else %}
+                <option value="{{ value }}">{{ label }}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="sortFilter">Sort:</label>
+            <select name="sort" id="sortFilter" class="filter-select">
+                <option value="">Default</option>
+
+                {% if current_sort == 'price_low' %}
+                <option value="price_low" selected>Price: Low to High</option>
+                {% else %}
+                <option value="price_low">Price: Low to High</option>
+                {% endif %}
+
+                {% if current_sort == 'price_high' %}
+                <option value="price_high" selected>Price: High to Low</option>
+                {% else %}
+                <option value="price_high">Price: High to Low</option>
+                {% endif %}
+
+                {% if current_sort == 'name' %}
+                <option value="name" selected>Name: A-Z</option>
+                {% else %}
+                <option value="name">Name: A-Z</option>
+                {% endif %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+        <a href="{% url 'products:product_list' %}" class="btn btn-outline btn-sm">Clear</a>
+    </form>
+
+    <!-- Products Grid -->
+    {% if products %}
+    <div class="product-grid">
+        {% for product in products %}
+        <div class="card">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img">
+            {% else %}
+            <div class="card-img"
+                style="display:flex;align-items:center;justify-content:center;font-size:3rem;background:#f1f5f9;">
+                {% if product.category == 'electronics' %}💻
+                {% elif product.category == 'clothing' %}👕
+                {% elif product.category == 'accessories' %}🎒
+                {% elif product.category == 'home' %}🏠
+                {% elif product.category == 'books' %}📚
+                {% else %}📦{% endif %}
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <span class="card-category">{{ product.get_category_display }}</span>
+                <h3 class="card-title">{{ product.name }}</h3>
+                <p class="card-text">{{ product.description|truncatewords:15 }}</p>
+                <div class="card-price">₹{{ product.price }}</div>
+                <div class="card-stock">
+                    {% if product.in_stock %}
+                    <span class="stock-in">✓ In Stock ({{ product.stock }})</span>
+                    {% else %}
+                    <span class="stock-out">✗ Out of Stock</span>
+                    {% endif %}
+                </div>
+                <div class="card-actions">
+                    <a href="{% url 'products:product_detail' product.id %}" class="btn btn-outline btn-sm">View
+                        Details</a>
+                    {% if product.in_stock %}
+                    <form method="POST" action="{% url 'cart:cart_add' product.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
+                    </form>
+                    {% else %}
+                    <button class="btn btn-primary btn-sm disabled" disabled>Out of Stock</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination" style="display:flex;justify-content:center;align-items:center;margin-top:40px;gap:15px;">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if current_query %}&q={{ current_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+            class="btn btn-outline btn-sm">&laquo; Prev</a>
+        {% endif %}
+
+        <span class="current-page" style="font-weight:500;color:var(--text-color);">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if current_query %}&q={{ current_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+            class="btn btn-outline btn-sm">Next &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>No products found</h3>
+        <p>Try a different search term or clear the filters.</p>
+        <a href="{% url 'products:product_list' %}" class="btn btn-primary">View All Products</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} — ShopEase{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="product-detail">
+        <!-- Product Image -->
+        {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-detail-img">
+        {% else %}
+        <div class="product-detail-img"
+            style="display:flex;align-items:center;justify-content:center;font-size:5rem;background:#f1f5f9;">
+            {% if product.category == 'electronics' %}💻
+            {% elif product.category == 'clothing' %}👕
+            {% elif product.category == 'accessories' %}🎒
+            {% elif product.category == 'home' %}🏠
+            {% elif product.category == 'books' %}📚
+            {% else %}📦{% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Product Info -->
+        <div class="product-detail-info">
+            <span class="card-category">{{ product.get_category_display }}</span>
+            <h1>{{ product.name }}</h1>
+            <div class="price">₹{{ product.price }}</div>
+
+            <div class="card-stock mb-2">
+                {% if product.in_stock %}
+                <span class="stock-in">✓ In Stock — {{ product.stock }} available</span>
+                {% else %}
+                <span class="stock-out">✗ Out of Stock</span>
+                {% endif %}
+            </div>
+
+            <p class="description">{{ product.description }}</p>
+
+            {% if product.in_stock %}
+            <form method="POST" action="{% url 'cart:cart_add' product.id %}">
+                {% csrf_token %}
+                <label style="font-weight:600;font-size:0.9rem;margin-bottom:6px;display:block;">Quantity:</label>
+                <div class="quantity-control">
+                    <button type="button" class="qty-btn" id="qtyMinus">−</button>
+                    <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="qty-input"
+                        id="qtyInput">
+                    <button type="button" class="qty-btn" id="qtyPlus">+</button>
+                </div>
+
+                <div class="product-detail-actions">
+                    <button type="submit" class="btn btn-primary btn-lg">🛒 Add to Cart</button>
+                    <a href="{% url 'products:product_list' %}" class="btn btn-outline btn-lg">← Back to Products</a>
+                </div>
+            </form>
+            {% else %}
+            <div class="product-detail-actions">
+                <button class="btn btn-primary btn-lg disabled" disabled>Out of Stock</button>
+                <a href="{% url 'products:product_list' %}" class="btn btn-outline btn-lg">← Back to Products</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

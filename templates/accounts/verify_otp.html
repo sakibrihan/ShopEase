@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify OTP — ShopEase{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2>Verify Your Account</h2>
+        <p class="form-subtitle">Enter the 6-digit OTP to activate your account</p>
+
+        {% if demo_otp %}
+        <div class="otp-demo-box">
+            ⚠️ <strong>Demo Mode</strong><br>
+            <small>In production, the OTP would be sent via SMS/Email.<br>For demo purposes, your OTP is:</small><br>
+            <strong>{{ demo_otp }}</strong>
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'accounts:verify_otp' %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_otp">Enter OTP</label>
+                {{ form.otp }}
+                {% if form.otp.errors %}{{ form.otp.errors }}{% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Verify OTP</button>
+            </div>
+        </form>
+
+        <div class="form-footer">
+            Didn't receive it? <a href="{% url 'accounts:resend_otp' %}">Resend OTP</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

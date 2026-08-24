@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Order #{{ order.id }} — ShopEase{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="success-page">
+        <div class="success-icon">🎉</div>
+        <h1>Order Confirmed!</h1>
+        <p>Thank you for your order. Your Order #{{ order.id }} has been received.</p>
+        <div style="margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <a href="{% url 'user_orders:order_detail' order.id %}" class="btn btn-primary">View Order Details</a>
+            <a href="{% url 'products:product_list' %}" class="btn btn-outline">Continue Shopping</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

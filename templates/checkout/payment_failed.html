@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Failed — ShopEase{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="fail-page">
+        <div class="success-icon">❌</div>
+        <h1>Payment Failed</h1>
+        <p>Your payment could not be processed. No money has been charged.</p>
+        <p style="color:var(--text-light);font-size:0.85rem;">💡 Tip: Use card number <strong>4111 1111 1111
+                1111</strong> for a guaranteed successful demo payment.</p>
+        <div style="margin-top:30px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <a href="{% url 'orders:payment' %}" class="btn btn-primary">Retry Payment</a>
+            <a href="{% url 'cart:cart_detail' %}" class="btn btn-outline">Back to Cart</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ShopEase - Simple shopping, easy checkout. Browse electronics, clothing, accessories and more.">
+    <title>{% block title %}ShopEase{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="{% url 'products:home' %}" class="nav-logo">
+                <span class="logo-icon">🛒</span> ShopEase
+            </a>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+
+            <div class="nav-menu" id="navMenu">
+                <div class="nav-links">
+                    <a href="{% url 'products:home' %}" class="nav-link">Home</a>
+                    <a href="{% url 'products:product_list' %}" class="nav-link">Products</a>
+                </div>
+
+                <form action="{% url 'products:product_list' %}" method="GET" class="nav-search">
+                    <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q|default:'' }}" class="search-input">
+                    <button type="submit" class="search-btn">🔍</button>
+                </form>
+
+                <div class="nav-actions">
+                    <a href="{% url 'cart:cart_detail' %}" class="nav-link cart-link">
+                        🛍️ Cart
+                        {% if cart_item_count %}<span class="cart-badge">{{ cart_item_count }}</span>{% endif %}
+                    </a>
+
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'user_orders:my_orders' %}" class="nav-link">My Orders</a>
+                        <a href="{% url 'accounts:profile' %}" class="nav-link">{{ user.username }}</a>
+                        <a href="{% url 'accounts:logout' %}" class="nav-link btn-outline-nav">Logout</a>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" class="nav-link">Login</a>
+                        <a href="{% url 'accounts:register' %}" class="nav-link btn-primary-nav">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages-container">
+        <div class="container">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">
+                {{ message }}
+                <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3><span class="logo-icon">🛒</span> ShopEase</h3>
+                    <p>Simple shopping. Easy checkout. Your one-stop destination for electronics, clothing, accessories, and more.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="{% url 'products:home' %}">Home</a></li>
+                        <li><a href="{% url 'products:product_list' %}">Products</a></li>
+                        <li><a href="{% url 'cart:cart_detail' %}">Cart</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Account</h4>
+                    <ul>
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
+                        <li><a href="{% url 'user_orders:my_orders' %}">My Orders</a></li>
+                        {% else %}
+                        <li><a href="{% url 'accounts:login' %}">Login</a></li>
+                        <li><a href="{% url 'accounts:register' %}">Register</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Info</h4>
+                    <p>This is a demo e-commerce project built with Django for educational purposes.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 ShopEase. All rights reserved. | Built with Django</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

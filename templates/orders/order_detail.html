@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Order #{{ order.id }} Details — ShopEase{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>Order #{{ order.id }}</h1>
+        <p>Placed on {{ order.created_at|date:"F d, Y \a\t h:i A" }}</p>
+    </div>
+</div>
+
+<div class="container" style="padding:30px 20px 40px;">
+    <div class="checkout-grid">
+        <!-- Order Items -->
+        <div>
+            <div class="order-detail-card">
+                <h2>📦 Order Items</h2>
+                <table class="orders-table" style="box-shadow:none;">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items.all %}
+                        <tr>
+                            <td>{{ item.product.name|default:"Deleted Product" }}</td>
+                            <td>₹{{ item.price }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td><strong>₹{{ item.subtotal }}</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div style="text-align:right;padding:16px;font-size:1.1rem;font-weight:700;">
+                    Total: ₹{{ order.total_amount }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Info -->
+        <div>
+            <div class="order-detail-card">
+                <h2>📋 Order Status</h2>
+                <div class="detail-row">
+                    <span class="label">Order Status</span>
+                    <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Payment Status</span>
+                    <span class="status-badge status-{{ order.payment_status }}">{{ order.get_payment_status_display
+                        }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Order Date</span>
+                    <span>{{ order.created_at|date:"M d, Y h:i A" }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Total</span>
+                    <span><strong>₹{{ order.total_amount }}</strong></span>
+                </div>
+            </div>
+
+            <div class="order-detail-card">
+                <h2>📍 Shipping Address</h2>
+                <p style="font-size:0.9rem;color:var(--text-light);line-height:1.7;">
+                    <strong>{{ order.full_name }}</strong><br>
+                    {{ order.address }}<br>
+                    {{ order.city }}, {{ order.state }} — {{ order.postal_code }}<br>
+                    📞 {{ order.phone }}<br>
+                    ✉️ {{ order.email }}
+                </p>
+            </div>
+
+            <a href="{% url 'user_orders:my_orders' %}" class="btn btn-outline" style="width:100%;">← Back to My
+                Orders</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

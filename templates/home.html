@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ShopEase — Simple Shopping, Easy Checkout{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1>Welcome to ShopEase</h1>
+        <p>Simple shopping. Easy checkout. Discover quality products at great prices.</p>
+        <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">Shop Now →</a>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Shop by Category</h2>
+        <p class="section-subtitle">Browse our curated collections</p>
+        <div class="category-grid">
+            {% for value, label in categories %}
+            <a href="{% url 'products:product_list' %}?category={{ value }}" class="category-card">
+                <div class="cat-icon">
+                    {% if value == 'electronics' %}💻
+                    {% elif value == 'clothing' %}👕
+                    {% elif value == 'accessories' %}🎒
+                    {% elif value == 'home' %}🏠
+                    {% elif value == 'books' %}📚
+                    {% endif %}
+                </div>
+                <div class="cat-name">{{ label }}</div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="section" style="background: #fff;">
+    <div class="container">
+        <h2 class="section-title">Featured Products</h2>
+        <p class="section-subtitle">Our top picks for you</p>
+
+        {% if featured_products %}
+        <div class="product-grid">
+            {% for product in featured_products %}
+            <div class="card">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="card-img">
+                {% else %}
+                <div class="card-img"
+                    style="display:flex;align-items:center;justify-content:center;font-size:3rem;background:#f1f5f9;">
+                    {% if product.category == 'electronics' %}💻
+                    {% elif product.category == 'clothing' %}👕
+                    {% elif product.category == 'accessories' %}🎒
+                    {% elif product.category == 'home' %}🏠
+                    {% elif product.category == 'books' %}📚
+                    {% else %}📦{% endif %}
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <span class="card-category">{{ product.get_category_display }}</span>
+                    <h3 class="card-title">{{ product.name }}</h3>
+                    <p class="card-text">{{ product.description|truncatewords:15 }}</p>
+                    <div class="card-price">₹{{ product.price }}</div>
+                    <div class="card-stock">
+                        {% if product.in_stock %}
+                        <span class="stock-in">✓ In Stock ({{ product.stock }})</span>
+                        {% else %}
+                        <span class="stock-out">✗ Out of Stock</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-actions">
+                        <a href="{% url 'products:product_detail' product.id %}" class="btn btn-outline btn-sm">View
+                            Details</a>
+                        {% if product.in_stock %}
+                        <form method="POST" action="{% url 'cart:cart_add' product.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
+                        </form>
+                        {% else %}
+                        <button class="btn btn-primary btn-sm disabled" disabled>Out of Stock</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-3">
+            <a href="{% url 'products:product_list' %}" class="btn btn-outline">View All Products →</a>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📦</div>
+            <h3>No products yet</h3>
+            <p>Products will appear here once they're added.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- About -->
+<section class="section">
+    <div class="container text-center">
+        <h2 class="section-title">Why ShopEase?</h2>
+        <p class="section-subtitle" style="max-width:600px;margin-left:auto;margin-right:auto;">
+            ShopEase is your simple, reliable online shopping destination. We offer quality products across multiple
+            categories with a smooth, hassle-free shopping experience.
+        </p>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Demo Payment — ShopEase{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>Secure Demo Payment</h1>
+        <p>Complete your purchase (No real money is processed)</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="checkout-grid">
+        <!-- Payment Form -->
+        <div class="checkout-card">
+            <div class="demo-badge">⚠️ Demo Payment Gateway — No Real Money Is Processed</div>
+
+            <h2>💳 Select Payment Method</h2>
+
+            <form method="POST" action="{% url 'orders:payment_process' %}" id="paymentForm">
+                {% csrf_token %}
+
+                <div class="payment-methods">
+                    <!-- Card -->
+                    <div class="payment-method active">
+                        <label>
+                            <input type="radio" name="payment_method" value="card" checked>
+                            💳 Credit / Debit Card
+                        </label>
+                        <div class="payment-fields">
+                            <div class="form-group">
+                                <label for="cardName">Cardholder Name</label>
+                                <input type="text" id="cardName" class="form-control" placeholder="John Doe">
+                            </div>
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number</label>
+                                <input type="text" id="cardNumber" name="card_number" class="form-control"
+                                    placeholder="4111 1111 1111 1111" maxlength="19">
+                                <span class="form-text">💡 Use 4111 1111 1111 1111 for guaranteed success</span>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                                <div class="form-group">
+                                    <label for="cardExpiry">Expiry Date</label>
+                                    <input type="text" id="cardExpiry" class="form-control" placeholder="MM/YY"
+                                        maxlength="5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cardCvv">CVV</label>
+                                    <input type="text" id="cardCvv" class="form-control" placeholder="123"
+                                        maxlength="3">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UPI -->
+                    <div class="payment-method">
+                        <label>
+                            <input type="radio" name="payment_method" value="upi">
+                            📱 UPI
+                        </label>
+                        <div class="payment-fields">
+                            <div class="form-group">
+                                <label for="upiId">UPI ID</label>
+                                <input type="text" id="upiId" class="form-control" placeholder="yourname@upi">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COD -->
+                    <div class="payment-method">
+                        <label>
+                            <input type="radio" name="payment_method" value="cod">
+                            🏠 Cash on Delivery
+                        </label>
+                        <div class="payment-fields">
+                            <p style="font-size:0.9rem;color:var(--text-light);">Pay when your order arrives at your
+                                doorstep. No advance payment required.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success btn-lg" style="width:100%;">🔒 Pay Now — ₹{{ cart.get_total
+                    }}</button>
+            </form>
+        </div>
+
+        <!-- Order Summary -->
+        <div>
+            <div class="checkout-card">
+                <h2>🧾 Order Summary</h2>
+                {% for item in cart %}
+                <div class="order-item">
+                    <span>{{ item.product.name }} × {{ item.qty }}</span>
+                    <span>₹{{ item.total_price }}</span>
+                </div>
+                {% endfor %}
+                <hr style="margin:16px 0;border:none;border-top:1px solid var(--border);">
+                <div class="order-item" style="font-weight:700;font-size:1.1rem;">
+                    <span>Total</span>
+                    <span>₹{{ cart.get_total }}</span>
+                </div>
+            </div>
+
+            <div class="checkout-card mt-2">
+                <h2>📍 Shipping To</h2>
+                <p style="font-size:0.9rem;color:var(--text-light);">
+                    <strong>{{ shipping.full_name }}</strong><br>
+                    {{ shipping.address }}<br>
+                    {{ shipping.city }}, {{ shipping.state }} — {{ shipping.postal_code }}<br>
+                    📞 {{ shipping.phone }}<br>
+                    ✉️ {{ shipping.email }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders — ShopEase{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>My Orders</h1>
+        <p>View your order history</p>
+    </div>
+</div>
+
+<div class="container" style="padding:30px 20px 40px;">
+    {% if orders %}
+    <table class="orders-table">
+        <thead>
+            <tr>
+                <th>Order #</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td><strong>#{{ order.id }}</strong></td>
+                <td>{{ order.created_at|date:"M d, Y" }}</td>
+                <td>₹{{ order.total_amount }}</td>
+                <td><span class="status-badge status-{{ order.payment_status }}">{{ order.get_payment_status_display
+                        }}</span></td>
+                <td><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+                <td><a href="{% url 'user_orders:order_detail' order.id %}" class="btn btn-outline btn-sm">View
+                        Details</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h3>No orders yet</h3>
+        <p>You haven't placed any orders. Start shopping to see your orders here!</p>
+        <a href="{% url 'products:product_list' %}" class="btn btn-primary">Start Shopping</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
