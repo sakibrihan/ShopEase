@@ -41,3 +41,44 @@ class OTPForm(forms.Form):
             'autocomplete': 'off',
         })
     )
+
+
+class PasswordResetRequestForm(forms.Form):
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your registered email',
+        })
+    )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not User.objects.filter(email=email, is_active=True).exists():
+            raise forms.ValidationError('No active account found with this email address.')
+        return email
+
+
+class SetNewPasswordForm(forms.Form):
+    new_password1 = forms.CharField(
+        label='New Password',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter new password',
+        }),
+        min_length=8,
+    )
+    new_password2 = forms.CharField(
+        label='Confirm New Password',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm new password',
+        }),
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        p1 = cleaned_data.get('new_password1')
+        p2 = cleaned_data.get('new_password2')
+        if p1 and p2 and p1 != p2:
+            raise forms.ValidationError('Passwords do not match.')
+        return cleaned_data
