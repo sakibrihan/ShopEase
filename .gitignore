@@ -3,4 +3,5 @@ __pycache__/
 *.pyc
 .env
 staticfiles/
+public_root/
 .vscode/

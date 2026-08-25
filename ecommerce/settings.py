@@ -113,6 +113,9 @@ STORAGES = {
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# WhiteNoise: serve media files at /media/ in production
+WHITENOISE_ROOT = BASE_DIR / 'public_root'
+
 # Auth
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
