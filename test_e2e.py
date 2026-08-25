@@ -31,6 +31,13 @@ print("=" * 60)
 print("  ShopEase - End-to-End Test Suite")
 print("=" * 60)
 
+# Clean up leftover test data from previous runs
+test_usernames = ['testuser', 'otheruser', 'debuguser']
+cleanup_count = User.objects.filter(username__in=test_usernames).count()
+if cleanup_count:
+    User.objects.filter(username__in=test_usernames).delete()
+    print(f"  [cleanup] Removed {cleanup_count} leftover test user(s)")
+
 c = Client()
 
 # ============================================
